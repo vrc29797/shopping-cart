@@ -1,2 +1,10 @@
-package com.merge.shoppingcart.dto;public class AuthenticationRequest {
+package com.merge.shoppingcart.dto;
+
+import lombok.Data;
+
+@Data
+public class AuthenticationRequest {
+  private String email;
+  private String password;
+  private String role;
 }

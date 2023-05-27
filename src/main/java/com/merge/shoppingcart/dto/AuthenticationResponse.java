@@ -1,9 +1,10 @@
 package com.merge.shoppingcart.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-public class AuthenticationRequest {
-    private String email;
-    private String password;
+@AllArgsConstructor
+public class AuthenticationResponse {
+  private String token;
 }

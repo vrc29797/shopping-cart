@@ -1,2 +1,6 @@
-package com.merge.shoppingcart.controller;public class OrderController {
-}
+package com.merge.shoppingcart.controller;
+
+import org.springframework.stereotype.Controller;
+
+@Controller
+public class OrderController {}

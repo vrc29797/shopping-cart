@@ -1,16 +1,13 @@
 package com.merge.shoppingcart.service;
 
-import com.merge.shoppingcart.dto.Product;
-
-import java.util.List;
+import com.merge.shoppingcart.dto.Cart;
 import java.util.UUID;
 
-public interface ProductService {
+public interface OrderService {
 
-    Product addProduct(Product product);
+  Cart addToCart(UUID productId, int quantity, UUID userId) throws Exception;
 
-    List<Product> listProducts();
+  Cart removeFromCart(UUID productId, int quantity, UUID userId) throws Exception;
 
-    Product getProduct(UUID id);
-
+  Cart getCart(UUID userId) throws Exception;
 }
