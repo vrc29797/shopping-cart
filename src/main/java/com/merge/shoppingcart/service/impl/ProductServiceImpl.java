@@ -1,5 +1,7 @@
 package com.merge.shoppingcart.service.impl;
 
+import com.merge.shoppingcart.dto.ErrorCode;
+import com.merge.shoppingcart.exception.ApiException;
 import com.merge.shoppingcart.model.Product;
 import com.merge.shoppingcart.repo.ProductRepo;
 import com.merge.shoppingcart.service.ProductService;
@@ -20,7 +22,9 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public Product getProduct(UUID id) {
-    return productRepo.findById(id).orElse(null);
+    return productRepo
+        .findById(id)
+        .orElseThrow(() -> new ApiException(ErrorCode.PRODUCT_NOT_FOUND.name()));
   }
 
   @Override

@@ -6,6 +6,7 @@ import com.merge.shoppingcart.model.User;
 import com.merge.shoppingcart.service.UserService;
 import java.util.List;
 import javax.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/users")
 @Validated
+@Slf4j
 public class UserController {
 
   @Autowired UserService userService;
@@ -39,13 +41,25 @@ public class UserController {
   @PostMapping("/logout")
   public ResponseEntity<BaseResponse<String>> logout(@RequestHeader("Authorization") String token) {
     String response = userService.logout(token);
+    // Can also remove cart for the user so App uses less memory/DB,
+    // I have kept the cart as it is for Ease of Use for user, so when they log in again, they can
+    // use Same cart.
     return ResponseEntity.ok(new BaseResponse<>(response));
   }
 
-  @PostMapping("/suspend")
+  @PostMapping("/suspend/{email}")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<BaseResponse<String>> suspend(@Valid String email) {
+  public ResponseEntity<BaseResponse<String>> suspend(@Valid @PathVariable String email) {
+    log.info("Email " + email);
     String response = userService.suspendUser(email);
+    return ResponseEntity.ok(new BaseResponse<>(response));
+  }
+
+  @PostMapping("/resume/{email}")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<BaseResponse<String>> resume(@Valid @PathVariable String email) {
+    log.info("Email " + email);
+    String response = userService.resumeUser(email);
     return ResponseEntity.ok(new BaseResponse<>(response));
   }
 

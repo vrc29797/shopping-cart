@@ -14,7 +14,6 @@ import lombok.*;
 @Getter
 @Data
 public class Product extends BaseEntity {
-
   @Column(name = "name")
   String name;
 

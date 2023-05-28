@@ -1,5 +1,7 @@
 package com.merge.shoppingcart.security;
 
+import com.merge.shoppingcart.dto.ErrorCode;
+import com.merge.shoppingcart.exception.ApiException;
 import com.merge.shoppingcart.service.impl.UserDetailServiceImpl;
 import java.io.IOException;
 import javax.servlet.FilterChain;
@@ -35,6 +37,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
       UserDetails userDetails = userService.loadUserByUsername(username);
+
+      if (!userDetails.isEnabled()) throw new ApiException(ErrorCode.USER_SUSPENDED.name());
 
       if (jwtUtils.validateToken(jwtToken, userDetails)) {
         UsernamePasswordAuthenticationToken authenticationToken =

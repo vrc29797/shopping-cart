@@ -11,6 +11,8 @@ public interface UserService {
 
   String suspendUser(String email);
 
+  String resumeUser(String email);
+
   String login(String username, String password);
 
   String logout(String token);

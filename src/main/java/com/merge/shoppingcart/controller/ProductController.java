@@ -5,6 +5,8 @@ import com.merge.shoppingcart.dto.ProductRequest;
 import com.merge.shoppingcart.model.Product;
 import com.merge.shoppingcart.service.ProductService;
 import java.util.List;
+import javax.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/products")
+@Slf4j
 public class ProductController {
 
   @Autowired ProductService productService;
@@ -20,7 +23,8 @@ public class ProductController {
   @PostMapping("/add")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<BaseResponse<Product>> addProduct(
-      @RequestBody ProductRequest productRequest) {
+      @Valid @RequestBody ProductRequest productRequest) {
+    log.info("Add product : {} ", productRequest);
     Product product =
         Product.builder()
             .name(productRequest.getName())
@@ -30,7 +34,6 @@ public class ProductController {
             .stock(productRequest.getStock())
             .isActive(productRequest.isActive())
             .build();
-
     Product response = productService.saveProduct(product);
     return new ResponseEntity<>(new BaseResponse<>(response), HttpStatus.CREATED);
   }

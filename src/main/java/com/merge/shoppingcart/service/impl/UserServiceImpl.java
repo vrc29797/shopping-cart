@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
     User user =
         userRepo.findUserByEmail(email).orElseThrow(() -> new ApiException(USER_NOT_FOUND.name()));
 
-    if (user.getRole().equals("ADMIN")) throw new ApiException(CANNOT_SUSPEND_ADMIN.name());
+    if (user.getRole().equals("ROLE_ADMIN")) throw new ApiException(CANNOT_SUSPEND_ADMIN.name());
 
     if (!user.isActive()) return "User " + email + " is already suspended";
 
@@ -54,12 +54,24 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  public String resumeUser(String email) {
+    User user =
+        userRepo.findUserByEmail(email).orElseThrow(() -> new ApiException(USER_NOT_FOUND.name()));
+
+    if (user.isActive()) return "User " + email + " is already Active";
+
+    user.setActive(true);
+    userRepo.save(user);
+    return "User " + email + " is Now Active";
+  }
+
+  @Override
   public String signup(String email, String password, String role) {
     // Check if the email is already taken
     if (userRepo.existsByEmail(email)) {
       throw new ApiException(EMAIL_ALREADY_TAKEN.name());
     }
-    if (role.equals("ADMIN") || role.equals("USER")) {
+    if (role.equals("ROLE_ADMIN") || role.equals("ROLE_USER")) {
 
       // Create a new user entity
       User user = new User();
@@ -82,7 +94,7 @@ public class UserServiceImpl implements UserService {
       throw new ApiException(USER_PASS_INVALID.name());
     }
     if (!user.get().isActive()) {
-      throw new ApiException(USER_NOT_ACTIVE.name());
+      throw new ApiException(USER_SUSPENDED.name());
     }
 
     return jwtUtils.generateToken(new CustomUserDetails(user.get()));

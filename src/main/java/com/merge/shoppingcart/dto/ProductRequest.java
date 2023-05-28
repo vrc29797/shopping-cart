@@ -15,7 +15,7 @@ public class ProductRequest {
 
   String description;
 
-  boolean isActive;
+  boolean active;
 
   int stock;
 
