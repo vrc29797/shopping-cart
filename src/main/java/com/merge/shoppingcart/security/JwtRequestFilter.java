@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,7 +39,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
       UserDetails userDetails = userService.loadUserByUsername(username);
 
-      if (!userDetails.isEnabled()) throw new ApiException(ErrorCode.USER_SUSPENDED.name());
+      if (!userDetails.isEnabled())
+        throw new ApiException(ErrorCode.USER_SUSPENDED, HttpStatus.UNAUTHORIZED);
 
       if (jwtUtils.validateToken(jwtToken, userDetails)) {
         UsernamePasswordAuthenticationToken authenticationToken =

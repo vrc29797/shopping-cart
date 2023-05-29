@@ -8,6 +8,7 @@ import com.merge.shoppingcart.service.ProductService;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,7 +25,7 @@ public class ProductServiceImpl implements ProductService {
   public Product getProduct(UUID id) {
     return productRepo
         .findById(id)
-        .orElseThrow(() -> new ApiException(ErrorCode.PRODUCT_NOT_FOUND.name()));
+        .orElseThrow(() -> new ApiException(ErrorCode.PRODUCT_NOT_FOUND, HttpStatus.NOT_FOUND));
   }
 
   @Override

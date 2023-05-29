@@ -15,7 +15,5 @@ public interface UserService {
 
   String login(String username, String password);
 
-  String logout(String token);
-
   String signup(String email, String password, String role);
 }

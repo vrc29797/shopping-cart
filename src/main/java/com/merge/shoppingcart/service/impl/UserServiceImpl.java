@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,15 +37,18 @@ public class UserServiceImpl implements UserService {
   public User getUser(String email) {
     return userRepo
         .findUserByEmail(email)
-        .orElseThrow(() -> new ApiException(USER_NOT_FOUND.name()));
+        .orElseThrow(() -> new ApiException(USER_NOT_FOUND, HttpStatus.NOT_FOUND));
   }
 
   @Override
   public String suspendUser(String email) {
     User user =
-        userRepo.findUserByEmail(email).orElseThrow(() -> new ApiException(USER_NOT_FOUND.name()));
+        userRepo
+            .findUserByEmail(email)
+            .orElseThrow(() -> new ApiException(USER_NOT_FOUND, HttpStatus.NOT_FOUND));
 
-    if (user.getRole().equals("ROLE_ADMIN")) throw new ApiException(CANNOT_SUSPEND_ADMIN.name());
+    if (user.getRole().equals("ROLE_ADMIN"))
+      throw new ApiException(CANNOT_SUSPEND_ADMIN, HttpStatus.BAD_REQUEST);
 
     if (!user.isActive()) return "User " + email + " is already suspended";
 
@@ -56,7 +60,9 @@ public class UserServiceImpl implements UserService {
   @Override
   public String resumeUser(String email) {
     User user =
-        userRepo.findUserByEmail(email).orElseThrow(() -> new ApiException(USER_NOT_FOUND.name()));
+        userRepo
+            .findUserByEmail(email)
+            .orElseThrow(() -> new ApiException(USER_NOT_FOUND, HttpStatus.NOT_FOUND));
 
     if (user.isActive()) return "User " + email + " is already Active";
 
@@ -69,7 +75,7 @@ public class UserServiceImpl implements UserService {
   public String signup(String email, String password, String role) {
     // Check if the email is already taken
     if (userRepo.existsByEmail(email)) {
-      throw new ApiException(EMAIL_ALREADY_TAKEN.name());
+      throw new ApiException(EMAIL_ALREADY_TAKEN, HttpStatus.BAD_REQUEST);
     }
     if (role.equals("ROLE_ADMIN") || role.equals("ROLE_USER")) {
 
@@ -83,7 +89,7 @@ public class UserServiceImpl implements UserService {
       // Save the user entity in the database
       userRepo.save(user);
       return "User Created Successfully";
-    } else throw new ApiException(INVALID_ROLE.name());
+    } else throw new ApiException(INVALID_ROLE, HttpStatus.BAD_REQUEST);
   }
 
   @Override
@@ -91,18 +97,12 @@ public class UserServiceImpl implements UserService {
 
     Optional<User> user = userRepo.findUserByEmail(email);
     if (!user.isPresent() || !passwordEncoder.matches(password, user.get().getPassword())) {
-      throw new ApiException(USER_PASS_INVALID.name());
+      throw new ApiException(USER_PASS_INVALID, HttpStatus.BAD_REQUEST);
     }
     if (!user.get().isActive()) {
-      throw new ApiException(USER_SUSPENDED.name());
+      throw new ApiException(USER_SUSPENDED, HttpStatus.BAD_REQUEST);
     }
 
     return jwtUtils.generateToken(new CustomUserDetails(user.get()));
-  }
-
-  @Override
-  public String logout(String token) {
-    // invalidate token
-    return "Logout successful";
   }
 }

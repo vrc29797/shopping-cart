@@ -1,29 +1,22 @@
 package com.merge.shoppingcart.dto;
 
 import com.merge.shoppingcart.model.User;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class CustomUserDetails implements UserDetails {
 
-  private String username;
-  private String password;
-  private boolean isActive;
-  private List<GrantedAuthority> authorities;
+  private final String username;
+  private final String password;
+  private final boolean isActive;
+  private final List<GrantedAuthority> authorities;
 
   public CustomUserDetails(User user) {
     this.username = user.getEmail();
     this.password = user.getPassword();
-    this.authorities =
-        new ArrayList<GrantedAuthority>() {
-          {
-            add(new SimpleGrantedAuthority(user.getRole()));
-          }
-        };
+    this.authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole()));
     this.isActive = user.isActive();
   }
 
@@ -49,7 +42,7 @@ public class CustomUserDetails implements UserDetails {
 
   @Override
   public boolean isAccountNonLocked() {
-    return isActive;
+    return true;
   }
 
   @Override
