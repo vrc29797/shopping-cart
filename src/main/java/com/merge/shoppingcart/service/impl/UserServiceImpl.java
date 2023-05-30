@@ -7,14 +7,12 @@ import com.merge.shoppingcart.exception.ApiException;
 import com.merge.shoppingcart.model.User;
 import com.merge.shoppingcart.repo.UserRepo;
 import com.merge.shoppingcart.security.JwtUtils;
-import com.merge.shoppingcart.service.OrderService;
 import com.merge.shoppingcart.service.UserService;
 import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +21,6 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
   @Autowired UserRepo userRepo;
-  @Autowired OrderService orderService;
-  @Autowired AuthenticationManager authenticationManager;
   @Autowired JwtUtils jwtUtils;
   @Autowired PasswordEncoder passwordEncoder;
 
@@ -77,7 +73,7 @@ public class UserServiceImpl implements UserService {
     if (userRepo.existsByEmail(email)) {
       throw new ApiException(EMAIL_ALREADY_TAKEN, HttpStatus.BAD_REQUEST);
     }
-    if (role.equals("ROLE_ADMIN") || role.equals("ROLE_USER")) {
+    if ("ROLE_ADMIN".equals(role) || "ROLE_USER".equals(role)) {
 
       // Create a new user entity
       User user = new User();
